@@ -1,14 +1,9 @@
 import puppeteer from 'puppeteer';
-import { Request, Response } from 'express';
 
-export default async function buscaValorAcoes(req: Request, res: Response) {
+export default async function buscaValorAcoes(acao) {
   const browser = await puppeteer.launch({ headless: 'new' });
   const page = await browser.newPage();
-  const acao = req.query.acao;
-  if (!acao)
-    throw Error(
-      'Por favor inclua o nome da ação que deseja pesquisar no param ?acao= do url'
-    );
+
   await page.goto(`https://www.google.com/search?q=${acao}+price`);
   const valor = await page.evaluate(() => {
     return {
@@ -22,5 +17,5 @@ export default async function buscaValorAcoes(req: Request, res: Response) {
   });
   await browser.close();
 
-  res.json(valor);
+  return valor;
 }
